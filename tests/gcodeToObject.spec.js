@@ -1,64 +1,66 @@
-const assert = require('chai').assert;
-const parse = require('./index');
+/* global describe, it */
 
-describe('GCode Parser', () => {
-  it('Should throw an error when you ask to parse something other than a string', () => {
+const assert = require('chai').assert;
+const gcodeToObject = require('../index').gcodeToObject;
+
+describe('Object To GCode functionality', () => {
+  it('Should throw an error if the input arg is not an object', () => {
     try {
-      const result = parse(42);
-    } catch(ex) {
+      gcodeToObject(42);
+    } catch (ex) {
       assert.equal(ex.message, 'gcode argument must be of type "string". 42 is type "number"');
     }
   });
 
   it('Should parse "M114"', () => {
-    const result = parse('M114');
+    const result = gcodeToObject('M114');
 
-    expected = {
+    const expected = {
       command: 'M114',
       args: {},
-      comment: null,
+      comment: undefined,
     };
 
     assert.deepEqual(result, expected);
   });
 
   it('Should parse "G90" with a new line at the end', () => {
-    const result = parse('G90\n');
+    const result = gcodeToObject('G90\n');
 
-    expected = {
+    const expected = {
       command: 'G90',
       args: {},
-      comment: null,
+      comment: undefined,
     };
 
     assert.deepEqual(result, expected);
   });
 
   it('Should parse "G90" without a new line at the end', () => {
-    const result = parse('G90');
+    const result = gcodeToObject('G90');
 
-    expected = {
+    const expected = {
       command: 'G90',
       args: {},
-      comment: null,
+      comment: undefined,
     };
 
     assert.deepEqual(result, expected);
   });
 
   it('Should parse G28XY, G28 X Y, G28X Y, and G28  XY identically', () => {
-    const result1 = parse('G28XY');
-    const result2 = parse('G28 X Y');
-    const result3 = parse('G28X Y');
-    const result4 = parse('G28  XY');
+    const result1 = gcodeToObject('G28XY');
+    const result2 = gcodeToObject('G28 X Y');
+    const result3 = gcodeToObject('G28X Y');
+    const result4 = gcodeToObject('G28  XY');
 
-    expected = {
+    const expected = {
       command: 'G28',
       args: {
         x: true,
         y: true,
       },
-      comment: null,
+      comment: undefined,
     };
 
     assert.deepEqual(result1, expected);
@@ -68,43 +70,43 @@ describe('GCode Parser', () => {
   });
 
   it('Should parse "M106 S0"', () => {
-    const result = parse('M106 S0');
+    const result = gcodeToObject('M106 S0');
 
-    expected = {
+    const expected = {
       command: 'M106',
       args: {
         s: 0,
       },
-      comment: null,
+      comment: undefined,
     };
 
     assert.deepEqual(result, expected);
   });
 
   it('Should parse "M104 S0 T0"', () => {
-    const result = parse('M104 S0 T0');
+    const result = gcodeToObject('M104 S0 T0');
 
-    expected = {
+    const expected = {
       command: 'M104',
       args: {
         s: 0,
         t: 0
       },
-      comment: null,
+      comment: undefined,
     };
 
     assert.deepEqual(result, expected);
   });
 
   it('Should parse "M104 S0"', () => {
-    const result = parse('M104 S0');
+    const result = gcodeToObject('M104 S0');
 
-    expected = {
+    const expected = {
       command: 'M104',
       args: {
         s: 0,
       },
-      comment: null,
+      comment: undefined,
     };
 
     assert.deepEqual(result, expected);
@@ -119,19 +121,19 @@ describe('GCode Parser', () => {
       'G1X+1',
       'G1 X+1',
       'G1X +1',
-      'G1 X +1'
+      'G1 X +1',
     ];
 
-    expected = {
+    const expected = {
       command: 'G1',
       args: {
         x: 1,
       },
-      comment: null,
+      comment: undefined,
     };
 
     g1X1Array.forEach(g1Command => {
-      const g1Result = parse(g1Command);
+      const g1Result = gcodeToObject(g1Command);
       assert.deepEqual(g1Result, expected);
     });
   });
@@ -144,16 +146,16 @@ describe('GCode Parser', () => {
       'G1 X -1'
     ];
 
-    expected = {
+    const expected = {
       command: 'G1',
       args: {
         x: -1,
       },
-      comment: null,
+      comment: undefined,
     };
 
     g1X1Array.forEach(g1Command => {
-      const g1Result = parse(g1Command);
+      const g1Result = gcodeToObject(g1Command);
       assert.deepEqual(g1Result, expected);
     });
   });
@@ -167,19 +169,19 @@ describe('GCode Parser', () => {
       'G1X-.1',
       'G1 X-.1',
       'G1X -.1',
-      'G1 X -.1'
+      'G1 X -.1',
     ];
 
-    expected = {
+    const expected = {
       command: 'G1',
       args: {
         x: -0.1,
       },
-      comment: null,
+      comment: undefined,
     };
 
     g1X1Array.forEach(g1Command => {
-      const g1Result = parse(g1Command);
+      const g1Result = gcodeToObject(g1Command);
       assert.deepEqual(g1Result, expected);
     });
   });
@@ -201,40 +203,40 @@ describe('GCode Parser', () => {
       'G1X+.1',
       'G1 X+.1',
       'G1X +.1',
-      'G1 X +.1'
+      'G1 X +.1',
     ];
 
-    expected = {
+    const expected = {
       command: 'G1',
       args: {
         x: 0.1,
       },
-      comment: null,
+      comment: undefined,
     };
 
     g1X1Array.forEach(g1Command => {
-      const g1Result = parse(g1Command);
+      const g1Result = gcodeToObject(g1Command);
       assert.deepEqual(g1Result, expected);
     });
   });
 
   // Not sure if this makes the most sense, but for now this is how it works
   it('What do we do if we get "T0"?', () => {
-    const result = parse('T0');
+    const result = gcodeToObject('T0');
 
     const expected = {
-      command: null,
+      command: undefined,
       args: {
         t: 0,
       },
-      comment: null,
+      comment: undefined,
     };
 
     assert.deepEqual(result, expected);
   });
 
   it('should be able to process "G1 X1.23 Y 5.0 z-1"', () => {
-    const result = parse('G1 X1.23 Y 5.0 z-1');
+    const result = gcodeToObject('G1 X1.23 Y 5.0 z-1');
 
     const expected = {
       command: 'G1',
@@ -243,14 +245,14 @@ describe('GCode Parser', () => {
         y: 5,
         z: -1,
       },
-      comment: null,
+      comment: undefined,
     };
 
     assert.deepEqual(result, expected);
   });
 
   it('should be able to process comments', () => {
-    const result = parse('G1 X1.23 Y4.56 Z7.89 ; comment string');
+    const result = gcodeToObject('G1 X1.23 Y4.56 Z7.89 ; comment string');
 
     const expected = {
       command: 'G1',
@@ -266,7 +268,7 @@ describe('GCode Parser', () => {
   });
 
   it('should be able to process comments with a semicolon in them', () => {
-    const result = parse('G1 X1.23 Y4.56 Z7.89 ; comment string; more comment');
+    const result = gcodeToObject('G1 X1.23 Y4.56 Z7.89 ; comment string; more comment');
 
     const expected = {
       command: 'G1',
@@ -280,5 +282,4 @@ describe('GCode Parser', () => {
 
     assert.deepEqual(result, expected);
   });
-
 });
