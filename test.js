@@ -8,7 +8,7 @@ describe('GCode Parser', () => {
     } catch(ex) {
       assert.equal(ex.message, 'gcode argument must be of type "string". 42 is type "number"');
     }
-  })
+  });
 
   it('Should parse "M114"', () => {
     const result = parse('M114');
@@ -16,6 +16,7 @@ describe('GCode Parser', () => {
     expected = {
       command: 'M114',
       args: {},
+      comment: null,
     };
 
     assert.deepEqual(result, expected);
@@ -27,6 +28,7 @@ describe('GCode Parser', () => {
     expected = {
       command: 'G90',
       args: {},
+      comment: null,
     };
 
     assert.deepEqual(result, expected);
@@ -38,6 +40,7 @@ describe('GCode Parser', () => {
     expected = {
       command: 'G90',
       args: {},
+      comment: null,
     };
 
     assert.deepEqual(result, expected);
@@ -55,6 +58,7 @@ describe('GCode Parser', () => {
         x: true,
         y: true,
       },
+      comment: null,
     };
 
     assert.deepEqual(result1, expected);
@@ -71,6 +75,7 @@ describe('GCode Parser', () => {
       args: {
         s: 0,
       },
+      comment: null,
     };
 
     assert.deepEqual(result, expected);
@@ -85,6 +90,7 @@ describe('GCode Parser', () => {
         s: 0,
         t: 0
       },
+      comment: null,
     };
 
     assert.deepEqual(result, expected);
@@ -98,6 +104,7 @@ describe('GCode Parser', () => {
       args: {
         s: 0,
       },
+      comment: null,
     };
 
     assert.deepEqual(result, expected);
@@ -120,6 +127,7 @@ describe('GCode Parser', () => {
       args: {
         x: 1,
       },
+      comment: null,
     };
 
     g1X1Array.forEach(g1Command => {
@@ -141,6 +149,7 @@ describe('GCode Parser', () => {
       args: {
         x: -1,
       },
+      comment: null,
     };
 
     g1X1Array.forEach(g1Command => {
@@ -166,6 +175,7 @@ describe('GCode Parser', () => {
       args: {
         x: -0.1,
       },
+      comment: null,
     };
 
     g1X1Array.forEach(g1Command => {
@@ -199,6 +209,7 @@ describe('GCode Parser', () => {
       args: {
         x: 0.1,
       },
+      comment: null,
     };
 
     g1X1Array.forEach(g1Command => {
@@ -216,6 +227,7 @@ describe('GCode Parser', () => {
       args: {
         t: 0,
       },
+      comment: null,
     };
 
     assert.deepEqual(result, expected);
@@ -231,8 +243,42 @@ describe('GCode Parser', () => {
         y: 5,
         z: -1,
       },
+      comment: null,
     };
 
     assert.deepEqual(result, expected);
   });
+
+  it('should be able to process comments', () => {
+    const result = parse('G1 X1.23 Y4.56 Z7.89 ; comment string');
+
+    const expected = {
+      command: 'G1',
+      args: {
+        x: 1.23,
+        y: 4.56,
+        z: 7.89,
+      },
+      comment: ' comment string',
+    };
+
+    assert.deepEqual(result, expected);
+  });
+
+  it('should be able to process comments with a semicolon in them', () => {
+    const result = parse('G1 X1.23 Y4.56 Z7.89 ; comment string; more comment');
+
+    const expected = {
+      command: 'G1',
+      args: {
+        x: 1.23,
+        y: 4.56,
+        z: 7.89,
+      },
+      comment: ' comment string; more comment',
+    };
+
+    assert.deepEqual(result, expected);
+  });
+
 });

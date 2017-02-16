@@ -11,15 +11,22 @@ module.exports = function gcodeParser(gcode) {
   const gcodeObject = {
     command: undefined,
     args: {},
+    comment: null
   };
 
+
+  const commentSplits = gcode.split(";");
+  if (commentSplits.length > 1) {
+    gcodeObject.comment = commentSplits.slice(1).join(";");
+  }
+
   const commandRegex = /[GM]\d+/;
-  const commandResult = gcode.toUpperCase().match(commandRegex);
+  const commandResult = commentSplits[0].toUpperCase().match(commandRegex);
   gcodeObject.command = commandResult && commandResult[0];
 
 
   // Set the gcode to lower case and remove any G<number> or M<number> commands
-  const gcodeArgString = gcode.toLowerCase().replace(/[gm]\d+/, '');
+  const gcodeArgString = commentSplits[0].toLowerCase().replace(/[gm]\d+/, '');
 
   // Parse each axis for a trailing floating number
   //If no float, treat the axis as a boolean flag
