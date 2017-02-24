@@ -52,25 +52,25 @@ describe('GCode Parser', () => {
   it('Should parse a "G1 X1" command object', () => {
     const gcodeObject = gcodeToObject('G1 X1');
     const gcode = objectToGcode(gcodeObject);
-    assert.equal(gcode, 'G1 X1.000');
+    assert.equal(gcode, 'G1 X1');
   });
 
   it('Should parse a "G1 X-1" command object', () => {
     const gcodeObject = gcodeToObject('G1 X-1');
     const gcode = objectToGcode(gcodeObject);
-    assert.equal(gcode, 'G1 X-1.000');
+    assert.equal(gcode, 'G1 X-1');
   });
 
   it('Should parse a "G1 X-0.1" command object', () => {
     const gcodeObject = gcodeToObject('G1 X-0.1');
     const gcode = objectToGcode(gcodeObject);
-    assert.equal(gcode, 'G1 X-0.100');
+    assert.equal(gcode, 'G1 X-0.1');
   });
 
   it('Should parse a "G1 X0.1" command object', () => {
     const gcodeObject = gcodeToObject('G1 X0.1');
     const gcode = objectToGcode(gcodeObject);
-    assert.equal(gcode, 'G1 X0.100');
+    assert.equal(gcode, 'G1 X0.1');
   });
 
   // Not sure if this makes the most sense, but for now this is how it works
@@ -83,24 +83,24 @@ describe('GCode Parser', () => {
   it('should be able to process a "G1 X1.23 Y5 Z-1" command object', () => {
     const gcodeObject = gcodeToObject('G1 X1.23 Y5 Z-1');
     const gcode = objectToGcode(gcodeObject);
-    assert.equal(gcode, 'G1 X1.230 Y5.000 Z-1.000');
+    assert.equal(gcode, 'G1 X1.23 Y5 Z-1');
   });
 
   it('should be able to process extrude commands', () => {
     const gcodeObject = gcodeToObject('G1 X1.23 E5');
     const gcode = objectToGcode(gcodeObject);
-    assert.equal(gcode, 'G1 X1.230 E5.00000');
+    assert.equal(gcode, 'G1 X1.23 E5');
   });
 
   it('should be able to process comments', () => {
     const gcodeObject = gcodeToObject('G1 X1.23 Y4.56 Z7.89; comment string');
     const gcode = objectToGcode(gcodeObject);
-    assert.equal(gcode, 'G1 X1.230 Y4.560 Z7.890; comment string');
+    assert.equal(gcode, 'G1 X1.23 Y4.56 Z7.89; comment string');
   });
 
   it('should be able to process comments with a semicolon in them', () => {
     const gcodeObject = gcodeToObject('G1 X1.23 Y4.56 Z7.89; comment string; more comment');
     const gcode = objectToGcode(gcodeObject);
-    assert.equal(gcode, 'G1 X1.230 Y4.560 Z7.890; comment string; more comment');
+    assert.equal(gcode, 'G1 X1.23 Y4.56 Z7.89; comment string; more comment');
   });
 });
